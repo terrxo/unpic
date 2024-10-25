@@ -78,7 +78,10 @@ export const generate: UrlGenerator<CloudflareImagesParams> = (
 	const parsed = parse(base.toString());
 
 	const props: CloudflareImagesParams = {
-		transformations: {},
+		transformations: {
+			...parsed.params?.transformations,
+			...params?.transformations,
+		},
 		...parsed.params,
 		...params,
 	};
@@ -99,7 +102,7 @@ export const generate: UrlGenerator<CloudflareImagesParams> = (
 };
 
 export const transform: UrlTransformer = (
-	{ url: originalUrl, width, height, format = "auto" },
+	{ url: originalUrl, width, height, format = "auto", cdnOptions },
 ) => {
 	const parsed = parse(originalUrl);
 
@@ -107,11 +110,20 @@ export const transform: UrlTransformer = (
 		throw new Error("Invalid Cloudflare Images URL");
 	}
 
+
 	const props: UrlGeneratorOptions<CloudflareImagesParams> = {
 		...parsed,
 		width,
 		height,
 		format,
+		params: {
+			...parsed.params,
+			...(cdnOptions?.[parsed.cdn] as Partial<CloudflareImagesParams>),
+			transformations: {
+				...parsed.params?.transformations,
+				...(cdnOptions?.[parsed.cdn] as Partial<CloudflareImagesParams>)?.transformations,
+			},
+		},
 	};
 
 	return generate(props);
