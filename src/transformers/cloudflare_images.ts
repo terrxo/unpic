@@ -118,13 +118,15 @@ export const transform: UrlTransformer = (
 		format,
 		params: {
 			...parsed.params,
-			...(cdnOptions?.[parsed.cdn] as Partial<CloudflareImagesParams>),
+			...(cdnOptions as Partial<CloudflareImagesParams>),
 			transformations: {
 				...parsed.params?.transformations,
-				...(cdnOptions?.[parsed.cdn] as Partial<CloudflareImagesParams>)?.transformations,
+				...(cdnOptions as Partial<CloudflareImagesParams>)?.transformations,
 			},
 		},
 	};
+
+
 
 	return generate(props);
 };
